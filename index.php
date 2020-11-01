@@ -1,13 +1,19 @@
-<html>
-<body>
-<h1>Play in Kodi</h1>
 <?php
+
 ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+$TESTMODE = true;
+
+if ($TESTMODE) {
+    $URL = "http://${_SERVER['REMOTE_ADDR']}:8080/jsonrpc";
+}
+else {
+    $URL = 'http://kodi:8080/jsonrpc';
+}
+
 $c = curl_init();
-curl_setopt($c, CURLOPT_URL, 'http://kodi:8080/jsonrpc');
+curl_setopt($c, CURLOPT_URL, $URL);
 curl_setopt($c, CURLOPT_HTTPHEADER, array(
     'Content-Type: application/json'
 ));
@@ -16,7 +22,10 @@ curl_setopt($c, CURLOPT_POSTFIELDS, '{ "id": 1, "jsonrpc": "2.0", "method": "Pla
 curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 $result = curl_exec($c);
 curl_close($c);
-echo($result);
 ?>
+<html>
+<body>
+<h1>Play in Kodi</h1>
+<h2><?php echo($URL); ?></h2>
 </body>
 </html>
