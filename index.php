@@ -5,12 +5,27 @@ error_reporting(E_ALL);
 
 $TESTMODE = true;
 
-$file = '';
+$CONVERTERS = [];
+
+$CONVERTERS['youtube'] = new class extends UrlConverter {
+    public static $REG_EX = '/^https?\:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)(\w+)$/';
+
+    public function convert($url) {
+        echo("MATCH");
+        return preg_replace(self::$REG_EX, 'plugin://plugin.video.youtube/play/?video_id=\3', $url);
+    }
+};
 
 if (!empty($_GET['file'])) {
     $file= trim($_GET['file']);
+    foreach ($CONVERTERS as $converter) {
+        $file = $converter->convertOrPass($file);        
+    }
+    var_dump($file);
     play($file);
 }
+
+/********* FUNCTIONS ***********/
 
 function play($file) {
     $c = curl_init();
@@ -34,6 +49,24 @@ function getKodiUrl() {
         return 'http://kodi:8080/jsonrpc';
     }
 }
+
+abstract class UrlConverter {
+    
+    public static $REG_EX = '/^.*$/';
+    
+    public function convertOrPass($url) {
+        $class = get_class($this);
+        var_dump($class);
+        var_dump($class::$REG_EX);
+        if (preg_match($class::$REG_EX, $url)) {
+            return $this->convert($url);
+        }
+        return $url;
+    }
+    
+    abstract public function convert($url);
+}
+
 ?>
 <html>
 <body>
