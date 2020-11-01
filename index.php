@@ -5,7 +5,12 @@ error_reporting(E_ALL);
 
 $TESTMODE = true;
 
-play('https://mediandr-a.akamaihd.net/progressive_geo/2020/1027/TV-20201027-1316-3400.hd.mp4');
+$file = '';
+
+if (!empty($_GET['file'])) {
+    $file= trim($_GET['file']);
+    play($file);
+}
 
 function play($file) {
     $c = curl_init();
@@ -33,5 +38,6 @@ function getKodiUrl() {
 <html>
 <body>
 <h1>Play in Kodi</h1>
+<h2><?php echo($file); ?></h2>
 </body>
 </html>
