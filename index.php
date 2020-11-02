@@ -1,12 +1,23 @@
 <?php
+// TODO Testmode als Parameter mitgeben
 // TODO Werder.TV
-// TODO Stopp-Button einblenden, wenn Play erfolgreich
+// TODO DAZN
+// TODO Startzeitmarke mitgeben
+// TODO Chapter-Urls in Means.TV-Plugin akzeptieren
 
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 $TESTMODE = false;
+
+if ($TESTMODE) {
+    $KODIURL = "http://${_SERVER['REMOTE_ADDR']}:8080";
+}
+else {
+    $KODIURL = 'http://kodi:8080';
+}
+$KODIAPI = "$KODIURL/jsonrpc";
 
 $CONVERTERS = [];
 $CONVERTERS['meanstv'] = new class extends UrlConverter {
@@ -53,14 +64,17 @@ if (!empty($_GET['file'])) {
     foreach ($CONVERTERS as $converter) {
         $file = $converter->convertOrPass($file);        
     }
-    play($file);
+    $result = play($file, $KODIAPI);
+    if ($result == '{"id":1,"jsonrpc":"2.0","result":"OK"}') {
+        header("Location: $KODIURL");
+    }
 }
 
 /********* FUNCTIONS ***********/
 
-function play($file) {
+function play($file, $apiUrl) {
     $c = curl_init();
-    curl_setopt($c, CURLOPT_URL, getKodiUrl());
+    curl_setopt($c, CURLOPT_URL, $apiUrl);
     curl_setopt($c, CURLOPT_HTTPHEADER, array(
         'Content-Type: application/json'
     ));
@@ -69,6 +83,7 @@ function play($file) {
     curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($c);
     curl_close($c);
+    return $result;
 }
 
 function getKodiUrl() {
@@ -101,5 +116,6 @@ abstract class UrlConverter {
 <body>
 <h1>Play in Kodi</h1>
 <h2><?php echo($file); ?></h2>
+<h2><?php echo($result); ?></h2>
 </body>
 </html>
