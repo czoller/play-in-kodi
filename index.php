@@ -9,7 +9,7 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-$TESTMODE = false;
+$TESTMODE = !empty($_GET['test']);
 
 if ($TESTMODE) {
     $KODIURL = "http://${_SERVER['REMOTE_ADDR']}:8080";
