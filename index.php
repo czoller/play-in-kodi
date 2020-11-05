@@ -4,6 +4,7 @@
 // TODO Startzeitmarke mitgeben
 // TODO Chapter-Deeplinks in Means.TV-Plugin akzeptieren
 
+/*************************** KONFIGURATION ***************************/
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -57,6 +58,7 @@ $CONVERTERS['zdf'] = new class extends UrlConverter {
     }
 };
 
+/*************************** MAIN ************************************/
 
 if (!empty($_GET['file'])) {
     $file= trim($_GET['file']);
@@ -69,7 +71,7 @@ if (!empty($_GET['file'])) {
     }
 }
 
-/********* FUNCTIONS ***********/
+/********************************************************************/
 
 function play($file, $apiUrl) {
     $c = curl_init();
@@ -83,16 +85,6 @@ function play($file, $apiUrl) {
     $result = curl_exec($c);
     curl_close($c);
     return $result;
-}
-
-function getKodiUrl() {
-    global $TESTMODE;
-    if ($TESTMODE) {
-        return "http://${_SERVER['REMOTE_ADDR']}:8080/jsonrpc";
-    }
-    else {
-        return 'http://kodi:8080/jsonrpc';
-    }
 }
 
 abstract class UrlConverter {
