@@ -1,9 +1,8 @@
 <?php
-// TODO Testmode als Parameter mitgeben
 // TODO Werder.TV
 // TODO DAZN
 // TODO Startzeitmarke mitgeben
-// TODO Chapter-Urls in Means.TV-Plugin akzeptieren
+// TODO Chapter-Deeplinks in Means.TV-Plugin akzeptieren
 
 
 ini_set('display_errors', 1);
