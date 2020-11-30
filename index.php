@@ -1,4 +1,5 @@
 <?php
+// TODO 3Sat 
 // TODO Werder.TV
 // TODO DAZN
 // TODO Startzeitmarke mitgeben
@@ -31,7 +32,6 @@ $CONVERTERS['youtube'] = new class extends UrlConverter {
     public static $REG_EX = '/^https?\:\/\/(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)(\w+)$/';
 
     public function convert($url) {
-        echo("MATCH");
         return preg_replace(self::$REG_EX, 'plugin://plugin.video.youtube/play/?video_id=\3', $url);
     }
 };
@@ -55,6 +55,13 @@ $CONVERTERS['zdf'] = new class extends UrlConverter {
         $contentName = urlencode("/zdf${matches[3]}");
         $videoUrl = urlencode($matches[2]);
         return "plugin://plugin.video.zdf_de_2016/?pagelet=PlayVideo&contentName=$contentName&videoUrl=$videoUrl";
+    }
+};
+$CONVERTERS['arte'] = new class extends UrlConverter {
+    public static $REG_EX = '/^https?\:\/\/(www\.)?arte\.tv\/.+$/';
+
+    public function convert($url) {
+        return "plugin://plugin.video.tyl0re.arte/?mode=playVideo&url=$url";
     }
 };
 
