@@ -51,10 +51,14 @@ $CONVERTERS['zdf'] = new class extends UrlConverter {
     public static $REG_EX = '/^https?\:\/\/(www\.)?zdf\.de((\/.+)\.html)$/';
 
     public function convert($url) {
-        preg_match(self::$REG_EX, $url, $matches);
-        $contentName = urlencode("/zdf${matches[3]}");
-        $videoUrl = urlencode($matches[2]);
-        return "plugin://plugin.video.zdf_de_2016/?pagelet=PlayVideo&contentName=$contentName&videoUrl=$videoUrl";
+        $file = file_get_contents($url);
+        if (preg_match('/\"contentUrl\"\:\ "(.+)\"\,/', $file, $matches) == 1) {
+            $docUrl = $matches[1];
+            $docUrl = str_replace('{playerId}', 'ngplayer_2_3', $docUrl);
+            $docUrl = urlencode($docUrl);
+            return "plugin://plugin.video.zdf_de_lite/?url=$docUrl&mode=libZdfPlay";
+        }
+        return $url;
     }
 };
 $CONVERTERS['arte'] = new class extends UrlConverter {
@@ -67,6 +71,8 @@ $CONVERTERS['arte'] = new class extends UrlConverter {
 
 /*************************** MAIN ************************************/
 
+$file = null;
+$result = null;
 if (!empty($_GET['file'])) {
     $file= trim($_GET['file']);
     foreach ($CONVERTERS as $converter) {
@@ -115,5 +121,9 @@ abstract class UrlConverter {
 <h1>Play in Kodi</h1>
 <h2><?php echo($file); ?></h2>
 <h2><?php echo($result); ?></h2>
+<form>
+	<input name="file" type="url" style="width:100%" placeholder="https://"><br>
+	<button type="submit">Play</button>
+</form>
 </body>
 </html>
